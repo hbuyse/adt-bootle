@@ -1,0 +1,4 @@
+beautifulsoup4==4.6.0
+bottle==0.12.13
+bs4==0.0.1
+requests==2.14.2
