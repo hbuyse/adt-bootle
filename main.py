@@ -5,6 +5,7 @@ import json
 
 from bottle import route, run
 from bottle import get, post
+from bottle import response
 
 from tournament import parse_tournaments
 
@@ -60,7 +61,7 @@ LIST_TOURNAMENTS = [
         "full": False,
         "night": False,
         "city": "Neuville-aux-Bois",
-        "department": "45",
+        "department": 45,
         "id": 2312,
         "name": "Tournoi Albert Hay",
         "address": "10 rue de Ruau, 45170 Neuville-aux-Bois, France",
@@ -112,7 +113,7 @@ LIST_TOURNAMENTS = [
         "full": False,
         "night": False,
         "city": "Rethel",
-        "department": "08",
+        "department": 8,
         "id": 2367,
         "address": ", 08300 Rethel, France",
         "mail": "http://www.accro-des-tournois.com/contactorga.html/2367/rethel",
@@ -169,7 +170,7 @@ LIST_TOURNAMENTS = [
         "full": False,
         "night": False,
         "city": "Massaguel",
-        "department": "81",
+        "department": 81,
         "id": 2308,
         "address": "VILLAGE, 81110 Massaguel, France",
         "user": "Pascale VAISSIERE",
@@ -203,7 +204,7 @@ LIST_TOURNAMENTS = [
         "full": False,
         "night": False,
         "city": "Arles",
-        "department": "13",
+        "department": 13,
         "id": 2376,
         "name": "3x3 Green \"TOREROS\" masculin",
         "address": "Stade des cités rue Pierre semard, 13200 Arles, France",
@@ -239,7 +240,7 @@ LIST_TOURNAMENTS = [
         "full": True,
         "night": False,
         "city": "Le chesnay",
-        "department": "78",
+        "department": 78,
         "id": 2315,
         "name": "Tournoi Cellois Chesnay",
         "address": "Gymnase nouvelle France - gymnase Duchesne, 78150 Le chesnay, France",
@@ -296,7 +297,7 @@ LIST_TOURNAMENTS = [
         "full": False,
         "night": False,
         "city": "Harnes",
-        "department": "62",
+        "department": 62,
         "id": 2304,
         "name": "Squadra Cup Volley 2e édition",
         "address": "128 chemin Valois, 62440 Harnes, France",
@@ -332,7 +333,7 @@ LIST_TOURNAMENTS = [
         "full": False,
         "night": False,
         "city": "Nogent-le-rotrou",
-        "department": "28",
+        "department": 28,
         "id": 2389,
         "address": ", 28400 Nogent-le-rotrou, France",
         "mail": "http://www.accro-des-tournois.com/contactorga.html/2389/nogentlerotrou",
@@ -359,7 +360,7 @@ LIST_TOURNAMENTS = [
         "full": False,
         "night": False,
         "city": "Damelevières",
-        "department": "54",
+        "department": 54,
         "id": 2407,
         "name": "Tournoi de la Fête des Mères",
         "address": "Rue Doct Drouot, 54360 Damelevières, France",
@@ -373,7 +374,13 @@ LIST_TOURNAMENTS = [
 
 @get('/')
 def get_tournaments():
-    return json.dumps(LIST_TOURNAMENTS).encode()
+    response.content_type = 'application/json'
+    return json.dumps(LIST_TOURNAMENTS, indent=4).encode()
+
+@get('/department/<dpt:int>')
+def get_tournaments(dpt):
+    response.content_type = 'application/json'
+    return json.dumps([i for i in LIST_TOURNAMENTS if i["department"] == dpt], indent=4).encode()
 
 # @post('/')
 # def post_tournaments():

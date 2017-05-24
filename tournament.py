@@ -81,7 +81,7 @@ class Tournament(object):
 
             # Where does it take place?
             'city': re.search(PATTERN_CITY_DEP, self.html_code.find('h3').string).group("city").strip(),
-            'department': re.search(PATTERN_CITY_DEP, self.html_code.find('h3').string).group("department")
+            'department': int(re.search(PATTERN_CITY_DEP, self.html_code.find('h3').string).group("department"))
         }
 
 
