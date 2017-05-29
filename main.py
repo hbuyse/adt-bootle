@@ -407,8 +407,13 @@ def get_tournaments():
 @get('/department/<dpt:int>')
 def get_tournaments(dpt):
     response.content_type = 'application/json'
-    # return json.dumps([i for i in LIST_TOURNAMENTS if i["department"] == dpt], indent=4).encode()
-    return [i for i in LIST_TOURNAMENTS if i["department"] == dpt]
+    d = dict()
+
+    for k, v in LIST_TOURNAMENTS.items():
+        if v["department"] == dpt:
+            d[k] = v
+
+    return d
 
 @get('/id/<id>')
 def get_tournaments(id):
