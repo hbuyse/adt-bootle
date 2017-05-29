@@ -10,368 +10,393 @@ from bottle import abort
 
 from tournament import parse_tournaments
 
-LIST_TOURNAMENTS = [
-    {
-        "events": [
-            {
-                "day": "25",
-                "month": "05",
-                "year": "2017",
-                "timestamp": 1495663200.0,
-                "formats": [
-                    "3x3 Féminin"
-                ],
-                "level": [
-                    "Départemental",
-                    "Régional",
-                    "National",
-                    "Pro"
-                ]
-            },
-            {
-                "day": "25",
-                "month": "05",
-                "year": "2017",
-                "timestamp": 1495663200.0,
-                "formats": [
-                    "3x3 Masculin"
-                ],
-                "level": [
-                    "Départemental",
-                    "Régional",
-                    "National",
-                    "Pro"
-                ]
-            },
-            {
-                "day": "25",
-                "month": "05",
-                "year": "2017",
-                "timestamp": 1495663200.0,
-                "formats": [
-                    "4x4 Mixte"
-                ],
-                "level": [
-                    "Loisir"
-                ]
-            }
-        ],
-        "href": "http://www.accro-des-tournois.com/fichetournoi.html/2312/neuvilleauxbois#amobile",
-        "ground": "grass",
-        "new": False,
-        "full": False,
-        "night": False,
-        "city": "Neuville-aux-Bois",
-        "department": 45,
-        "id": 2312,
-        "name": "Tournoi Albert Hay",
-        "address": "10 rue de Ruau, 45170 Neuville-aux-Bois, France",
-        "user": "Neuville Sports Volley-Ball",
-        "phone": "02.38.75.51.21",
-        "mail": "http://www.accro-des-tournois.com/contactorga.html/2312/neuvilleauxbois",
-        "hour": "10h",
-        "terrains": 20,
-        "gymnasium": 1,
-        "inscription": "Prévente : 8€ par joueur\nSur place : 8€ par joueur\n\nA l'ordre de Neuville Sports Volley-Ball\nA envoyer au 13 rue de Mondame, 45170 Neuville-aux-bois",
-        "additional": "Neuville Sports Volley-Ball propose à son habitude son fameux tournoi sur herbe le jeudi de l'Ascension. \nPlusieurs formules disponibles :\n- 3x3 Féminins (8€ par joueur)\n- 3x3 Masculins (8€ par joueur)\n- 4x4 Loisirs Mixte (8€ par joueur)\n- 2x2 M11 - M13 Mixte (5€ par joueur)\n- 1x1 M9 Mixte (3€ par joueur)\nInscription directement sur place de 9h à 9h30.\nRepli en salles en cas de pluie.\nSur place vous trouverez également : \n- Buffet permanent\n- Grillades\n- Frites\n- Buvette \nPossibilité de régler en carte bleue",
-        "publisher": "NSVB45"
+
+LIST_DEPARTEMENT = {
+    1: {
+        "department": "Ain",
+        "region": "Rhône-Alpes"
     },
-    {
-        "events": [
-            {
-                "day": "25",
-                "month": "05",
-                "year": "2017",
-                "timestamp": 1495663200.0,
-                "formats": [
-                    "4x4 Mixte"
-                ],
-                "level": [
-                    "Loisir",
-                    "Départemental",
-                    "Régional",
-                    "National"
-                ]
-            },
-            {
-                "day": "25",
-                "month": "05",
-                "year": "2017",
-                "timestamp": 1495663200.0,
-                "formats": [
-                    "3x3 Féminin"
-                ],
-                "level": [
-                    "Loisir",
-                    "Départemental",
-                    "Régional"
-                ]
-            }
-        ],
-        "href": "http://www.accro-des-tournois.com/fichetournoi.html/2367/rethel#amobile",
-        "ground": "indoor",
-        "new": False,
-        "full": False,
-        "night": False,
-        "city": "Rethel",
-        "department": 8,
-        "id": 2367,
-        "address": ", 08300 Rethel, France",
-        "mail": "http://www.accro-des-tournois.com/contactorga.html/2367/rethel",
-        "publisher": "Rik"
+    2: {
+        "department": "Aisne",
+        "region": "Picardie"
     },
-    {
-        "events": [
-            {
-                "day": "25",
-                "month": "05",
-                "year": "2017",
-                "timestamp": 1495663200.0,
-                "formats": [
-                    "4x4 Mixte"
-                ],
-                "level": [
-                    "Loisir"
-                ]
-            },
-            {
-                "day": "25",
-                "month": "05",
-                "year": "2017",
-                "timestamp": 1495663200.0,
-                "formats": [
-                    "3x3 Masculin"
-                ],
-                "level": [
-                    "Départemental",
-                    "Régional",
-                    "National",
-                    "Pro"
-                ]
-            },
-            {
-                "day": "25",
-                "month": "05",
-                "year": "2017",
-                "timestamp": 1495663200.0,
-                "formats": [
-                    "3x3 Féminin"
-                ],
-                "level": [
-                    "Départemental",
-                    "Régional",
-                    "National",
-                    "Pro"
-                ]
-            }
-        ],
-        "href": "http://www.accro-des-tournois.com/fichetournoi.html/2308/massaguel#amobile",
-        "ground": "grass",
-        "new": False,
-        "full": False,
-        "night": False,
-        "city": "Massaguel",
-        "department": 81,
-        "id": 2308,
-        "address": "VILLAGE, 81110 Massaguel, France",
-        "user": "Pascale VAISSIERE",
-        "phone": "06 87 30 80 94",
-        "website": "http://www.cmvb.net",
-        "mail": "http://www.accro-des-tournois.com/contactorga.html/2308/massaguel",
-        "terrains": 15,
-        "inscription": "Prévente : 24€ par équipe\n\nA l'ordre de CMVB",
-        "additional": "Buvette sur place\n1500€ de lots",
-        "publisher": "CMVB"
+    3: {
+        "department": "Allier",
+        "region": "Auvergne"
     },
-    {
-        "events": [
-            {
-                "day": "27",
-                "month": "05",
-                "year": "2017",
-                "timestamp": 1495836000.0,
-                "formats": [
-                    "3x3 Masculin"
-                ],
-                "level": [
-                    "National",
-                    "Pro"
-                ]
-            }
-        ],
-        "href": "http://www.accro-des-tournois.com/fichetournoi.html/2376/arles#amobile",
-        "ground": "grass",
-        "new": False,
-        "full": False,
-        "night": False,
-        "city": "Arles",
-        "department": 13,
-        "id": 2376,
-        "name": "3x3 Green \"TOREROS\" masculin",
-        "address": "Stade des cités rue Pierre semard, 13200 Arles, France",
-        "phone": "06.18.74.04.32",
-        "website": "http://https://www.facebook.com/Volley-Ball-Arl%C3%A9sien-954533104677774/",
-        "mail": "http://www.accro-des-tournois.com/contactorga.html/2376/arles",
-        "hour": "09h30",
-        "inscription": "Sur place : 30€ par équipe",
-        "additional": "3x3 masculin sur herbe.\nEn cas de pluie gymnase de repli.\nBuvette et grillade sur place. Soirée et apéro après tournoi.",
-        "publisher": "YohannVBA"
+    4: {
+        "department": "Alpes de Haute-Provence",
+        "region": "Provence-Alpes-Côte d'Azur"
     },
-    {
-        "events": [
-            {
-                "day": "28",
-                "month": "05",
-                "year": "2017",
-                "timestamp": 1495922400.0,
-                "formats": [
-                    "4x4 Mixte"
-                ],
-                "level": [
-                    "Départemental",
-                    "Régional",
-                    "National",
-                    "Pro"
-                ]
-            }
-        ],
-        "href": "http://www.accro-des-tournois.com/fichetournoi.html/2315/le-chesnay#amobile",
-        "ground": "indoor",
-        "new": False,
-        "full": True,
-        "night": False,
-        "city": "Le chesnay",
-        "department": 78,
-        "id": 2315,
-        "name": "Tournoi Cellois Chesnay",
-        "address": "Gymnase nouvelle France - gymnase Duchesne, 78150 Le chesnay, France",
-        "user": "Élodie Despierre",
-        "phone": "06 24 44 04 28",
-        "mail": "http://www.accro-des-tournois.com/contactorga.html/2315/le-chesnay",
-        "hour": "8h30",
-        "maxteams": 36,
-        "terrains": 6,
-        "inscription": "Prévente : 40€ par équipe\nSur place : 44€ par équipe\n\nA l'ordre de Cellois Chesnay Volley Hall \nA envoyer au Despierre Élodie 5 rue Pottier 78150 Le chesnay",
-        "additional": "Venez nombreux pour notre 5eme tournoi Cellois-Chesnay.\nUne buvette dans chaque gymnase et de nombreux lots vous attendent.",
-        "publisher": "Elodie"
+    5: {
+        "department": "Hautes-Alpes",
+        "region": "Provence-Alpes-Côte d'Azur"
     },
-    {
-        "events": [
-            {
-                "day": "28",
-                "month": "05",
-                "year": "2017",
-                "timestamp": 1495922400.0,
-                "formats": [
-                    "3x3 Masculin"
-                ],
-                "level": [
-                    "Loisir",
-                    "Départemental",
-                    "Régional",
-                    "National",
-                    "Pro",
-                    "Kids"
-                ]
-            },
-            {
-                "day": "28",
-                "month": "05",
-                "year": "2017",
-                "timestamp": 1495922400.0,
-                "formats": [
-                    "3x3 Féminin"
-                ],
-                "level": [
-                    "Loisir",
-                    "Départemental",
-                    "Régional",
-                    "National",
-                    "Pro",
-                    "Kids"
-                ]
-            }
-        ],
-        "href": "http://www.accro-des-tournois.com/fichetournoi.html/2304/harnes#amobile",
-        "ground": "indoor",
-        "new": False,
-        "full": False,
-        "night": False,
-        "city": "Harnes",
-        "department": 62,
-        "id": 2304,
-        "name": "Squadra Cup Volley 2e édition",
-        "address": "128 chemin Valois, 62440 Harnes, France",
-        "user": "Harnes Volley-Ball",
-        "phone": "0623693535",
-        "website": "http://www.harnes-volleyball.fr",
-        "mail": "http://www.accro-des-tournois.com/contactorga.html/2304/harnes",
-        "maxteams": 50,
-        "terrains": 10,
-        "inscription": "Prévente : 10€ par joueur\nSur place : 15€ par joueur\n\nA l'ordre de Harnes Volley-Ball\nA envoyer au Harnes VB - Squadra Cup Volley - Salle Régionale Maréchal 128 Chemin Valois 62440 Harnes",
-        "additional": "- Inscription via le site internet : www.harnes-volleyball.fr\n- 50 équipes max en Masc / 30 en Fém\n- 1 tee-shirt offert à chaque participant\n- Nombreux lots à gagner !\n- Barbeuc le midi et petite restauration : frites, sandwiches..\n- Parking gratuit\n- 3 Gymnases : Salle Régionale Maréchal, Complexe sportif André Bigotte, Gymnase du Collège Victor Hugo (à proximité de la salle Maréchal)\n- Ouverture : 9H rdv à la salle Maréchal\n- Inscription sur place jusqu'à 9H30 le 28/5\n- Début du tournoi à 9H45/10H\n- A 10 Minutes de Lens, accès routiers/autoroutiers à proximité (A1/A26/A21 N17)",
-        "publisher": "HVB62"
+    6: {
+        "department": "Alpes-Maritimes",
+        "region": "Provence-Alpes-Côte d'Azur"
     },
-    {
-        "events": [
-            {
-                "day": "28",
-                "month": "05",
-                "year": "2017",
-                "timestamp": 1495922400.0,
-                "formats": [
-                    "3x3 Mixte"
-                ],
-                "level": [
-                    "Loisir",
-                    "Départemental"
-                ]
-            }
-        ],
-        "href": "http://www.accro-des-tournois.com/fichetournoi.html/2389/nogentlerotrou#amobile",
-        "ground": "grass",
-        "new": False,
-        "full": False,
-        "night": False,
-        "city": "Nogent-le-rotrou",
-        "department": 28,
-        "id": 2389,
-        "address": ", 28400 Nogent-le-rotrou, France",
-        "mail": "http://www.accro-des-tournois.com/contactorga.html/2389/nogentlerotrou",
-        "publisher": "Julioguss"
+    7: {
+        "department": "Ardèche",
+        "region": "Rhône-Alpes"
     },
-    {
-        "events": [
-            {
-                "day": "28",
-                "month": "05",
-                "year": "2017",
-                "timestamp": 1495922400.0,
-                "formats": [
-                    "3x3 Mixte"
-                ],
-                "level": [
-                    "Loisir"
-                ]
-            }
-        ],
-        "href": "http://www.accro-des-tournois.com/fichetournoi.html/2407/damelevieres#amobile",
-        "ground": "grass",
-        "new": True,
-        "full": False,
-        "night": False,
-        "city": "Damelevières",
-        "department": 54,
-        "id": 2407,
-        "name": "Tournoi de la Fête des Mères",
-        "address": "Rue Doct Drouot, 54360 Damelevières, France",
-        "phone": "0660927193",
-        "mail": "http://www.accro-des-tournois.com/contactorga.html/2407/damelevieres",
-        "hour": "9h00",
-        "inscription": "Prévente : 12€ par équipe\nSur place : 14€ par équipe",
-        "publisher": "Romane12"
+    8: {
+        "department": "Ardennes",
+        "region": "Champagne"
+    },
+    9: {
+        "department": "Ariège",
+        "region": "Midi-Pyrénées"
+    },
+    10: {
+        "department": "Aube",
+        "region": "Champagne"
+    },
+    11: {
+        "department": "Aude",
+        "region": "Languedoc"
+    },
+    12: {
+        "department": "Aveyron",
+        "region": "Midi-Pyrénées"
+    },
+    13: {
+        "department": "Bouches du Rhône",
+        "region": "Provence-Alpes-Côte d'Azur"
+    },
+    14: {
+        "department": "Calvados",
+        "region": "Basse-Normandie"
+    },
+    15: {
+        "department": "Cantal",
+        "region": "Auvergne"
+    },
+    16: {
+        "department": "Charente",
+        "region": "Poitou-Charente"
+    },
+    17: {
+        "department": "Charente Maritime",
+        "region": "Poitou-Charente"
+    },
+    18: {
+        "department": "Cher",
+        "region": "Centre"
+    },
+    19: {
+        "department": "Corrèze",
+        "region": "Limousin"
+    },
+    2A: {
+        "department": "Corse du Sud",
+        "region": "Corse"
+    },
+    2B: {
+        "department": "Haute-Corse",
+        "region": "Corse"
+    },
+    21: {
+        "department": "Côte d'Or",
+        "region": "Bourgogne"
+    },
+    22: {
+        "department": "Côtes d'Armor",
+        "region": "Bretagne"
+    },
+    23: {
+        "department": "Creuse",
+        "region": "Limousin"
+    },
+    24: {
+        "department": "Dordogne",
+        "region": "Aquitaine"
+    },
+    25: {
+        "department": "Doubs",
+        "region": "Franche-Comté"
+    },
+    26: {
+        "department": "Drôme",
+        "region": "Rhône-Alpes"
+    },
+    27: {
+        "department": "Eure",
+        "region": "Haute-Normandie"
+    },
+    28: {
+        "department": "Eure-et-Loir",
+        "region": "Centre"
+    },
+    29: {
+        "department": "Finistère",
+        "region": "Bretagne"
+    },
+    30: {
+        "department": "Gard",
+        "region": "Languedoc"
+    },
+    31: {
+        "department": "Haute-Garonne",
+        "region": "Midi-Pyrénées"
+    },
+    32: {
+        "department": "Gers",
+        "region": "Midi-Pyrénées"
+    },
+    33: {
+        "department": "Gironde",
+        "region": "Aquitaine"
+    },
+    34: {
+        "department": "Hérault",
+        "region": "Languedoc"
+    },
+    35: {
+        "department": "Ille-et-Vilaine",
+        "region": "Bretagne"
+    },
+    36: {
+        "department": "Indre",
+        "region": "Centre"
+    },
+    37: {
+        "department": "Indre-et-Loire",
+        "region": "Centre"
+    },
+    38: {
+        "department": "Isère",
+        "region": "Rhône-Alpes"
+    },
+    39: {
+        "department": "Jura",
+        "region": "Franche-Comté"
+    },
+    40: {
+        "department": "Landes",
+        "region": "Aquitaine"
+    },
+    41: {
+        "department": "Loir-et-Cher",
+        "region": "Centre"
+    },
+    42: {
+        "department": "Loire",
+        "region": "Rhône-Alpes"
+    },
+    43: {
+        "department": "Haute-Loire",
+        "region": "Auvergne"
+    },
+    44: {
+        "department": "Loire-Atlantique",
+        "region": "Pays-de-la-Loire"
+    },
+    45: {
+        "department": "Loiret",
+        "region": "Centre"
+    },
+    46: {
+        "department": "Lot",
+        "region": "Midi-Pyrénées"
+    },
+    47: {
+        "department": "Lot-et-Garonne",
+        "region": "Aquitaine"
+    },
+    48: {
+        "department": "Lozère",
+        "region": "Languedoc"
+    },
+    49: {
+        "department": "Maine-et-Loire",
+        "region": "Pays-de-la-Loire"
+    },
+    50: {
+        "department": "Manche",
+        "region": "Normandie"
+    },
+    51: {
+        "department": "Marne",
+        "region": "Champagne"
+    },
+    52: {
+        "department": "Haute-Marne",
+        "region": "Champagne"
+    },
+    53: {
+        "department": "Mayenne",
+        "region": "Pays-de-la-Loire"
+    },
+    54: {
+        "department": "Meurthe-et-Moselle",
+        "region": "Lorraine"
+    },
+    55: {
+        "department": "Meuse",
+        "region": "Lorraine"
+    },
+    56: {
+        "department": "Morbihan",
+        "region": "Bretagne"
+    },
+    57: {
+        "department": "Moselle",
+        "region": "Lorraine"
+    },
+    58: {
+        "department": "Nièvre",
+        "region": "Bourgogne"
+    },
+    59: {
+        "department": "Nord",
+        "region": "Nord"
+    },
+    60: {
+        "department": "Oise",
+        "region": "Picardie"
+    },
+    61: {
+        "department": "Orne",
+        "region": "Basse-Normandie"
+    },
+    62: {
+        "department": "Pas-de-Calais",
+        "region": "Nord"
+    },
+    63: {
+        "department": "Puy-de-Dôme",
+        "region": "Auvergne"
+    },
+    64: {
+        "department": "Pyrénées-Atlantiques",
+        "region": "Aquitaine"
+    },
+    65: {
+        "department": "Hautes-Pyrénées",
+        "region": "Midi-Pyrénées"
+    },
+    66: {
+        "department": "Pyrénées-Orientales",
+        "region": "Languedoc"
+    },
+    67: {
+        "department": "Bas-Rhin",
+        "region": "Alsace"
+    },
+    68: {
+        "department": "Haut-Rhin",
+        "region": "Alsace"
+    },
+    69: {
+        "department": "Rhône",
+        "region": "Rhône-Alpes"
+    },
+    70: {
+        "department": "Haute-Saône",
+        "region": "Franche-Comté"
+    },
+    71: {
+        "department": "Saône-et-Loire",
+        "region": "Bourgogne"
+    },
+    72: {
+        "department": "Sarthe",
+        "region": "Pays-de-la-Loire"
+    },
+    73: {
+        "department": "Savoie",
+        "region": "Rhône-Alpes"
+    },
+    74: {
+        "department": "Haute-Savoie",
+        "region": "Rhône-Alpes"
+    },
+    75: {
+        "department": "Paris",
+        "region": "Ile-de-France"
+    },
+    76: {
+        "department": "Seine-Maritime",
+        "region": "Haute-Normandie"
+    },
+    77: {
+        "department": "Seine-et-Marne",
+        "region": "Ile-de-France"
+    },
+    78: {
+        "department": "Yvelines",
+        "region": "Ile-de-France"
+    },
+    79: {
+        "department": "Deux-Sèvres",
+        "region": "Poitou-Charente"
+    },
+    80: {
+        "department": "Somme",
+        "region": "Picardie"
+    },
+    81: {
+        "department": "Tarn",
+        "region": "Midi-Pyrénées"
+    },
+    82: {
+        "department": "Tarn-et-Garonne",
+        "region": "Midi-Pyrénées"
+    },
+    83: {
+        "department": "Var",
+        "region": "Provence-Alpes-Côte d'Azur"
+    },
+    84: {
+        "department": "Vaucluse",
+        "region": "Provence-Alpes-Côte d'Azur"
+    },
+    85: {
+        "department": "Vendée",
+        "region": "Pays-de-la-Loire"
+    },
+    86: {
+        "department": "Vienne",
+        "region": "Poitou-Charente"
+    },
+    87: {
+        "department": "Haute-Vienne",
+        "region": "Limousin"
+    },
+    88: {
+        "department": "Vosges",
+        "region": "Lorraine"
+    },
+    89: {
+        "department": "Yonne",
+        "region": "Bourgogne"
+    },
+    90: {
+        "department": "Territoire-de-Belfort",
+        "region": "Franche-Comté"
+    },
+    91: {
+        "department": "Essonne",
+        "region": "Ile-de-France"
+    },
+    92: {
+        "department": "Hauts-de-Seine",
+        "region": "Ile-de-France"
+    },
+    93: {
+        "department": "Seine-St-Denis",
+        "region": "Ile-de-France"
+    },
+    94: {
+        "department": "Val-de-Marne",
+        "region": "Ile-de-France"
+    },
+    95: {
+        "department": "Val-d'Oise",
+        "region": "Ile-de-France"
     }
-]
+}
 
 @get('/')
 def get_tournaments():
