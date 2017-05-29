@@ -81,9 +81,11 @@ class Tournament(object):
 
             # Where does it take place?
             'city': re.search(PATTERN_CITY_DEP, self.html_code.find('h3').string).group("city").strip(),
-            'department': int(re.search(PATTERN_CITY_DEP, self.html_code.find('h3').string).group("department"))
         }
-
+        try:
+            self.infos['department'] = int(re.search(PATTERN_CITY_DEP, self.html_code.find('h3').string).group("department"))
+        except ValueError as e:
+            self.infos['department'] = re.search(PATTERN_CITY_DEP, self.html_code.find('h3').string).group("department")
 
         self.infos['id'] = int(re.search(PATTERN_ID, self.infos['href']).group("id"))
 
@@ -166,7 +168,7 @@ def download_main_page():
 
 
 def parse_tournaments():
-    l = list()
+    d = dict()
     s = BeautifulSoup(download_main_page(), 'html.parser')
 
     elements = s.find_all('li', attrs={"class" : "elementtournoi"})
@@ -174,9 +176,9 @@ def parse_tournaments():
         t = Tournament(e)
         t.parse()
         print(t)
-        l.append(t.json())
+        d[t.json()["id"]] = t.json()
 
-    return l
+    return d
 
 
 if __name__ == '__main__':

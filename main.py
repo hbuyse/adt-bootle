@@ -6,6 +6,7 @@ import json
 from bottle import route, run
 from bottle import get, post
 from bottle import response
+from bottle import abort
 
 from tournament import parse_tournaments
 
@@ -375,18 +376,31 @@ LIST_TOURNAMENTS = [
 @get('/')
 def get_tournaments():
     response.content_type = 'application/json'
-    return json.dumps(LIST_TOURNAMENTS, indent=4).encode()
+    # return json.dumps(LIST_TOURNAMENTS, indent=4).encode()
+    return LIST_TOURNAMENTS
 
 @get('/department/<dpt:int>')
 def get_tournaments(dpt):
     response.content_type = 'application/json'
-    return json.dumps([i for i in LIST_TOURNAMENTS if i["department"] == dpt], indent=4).encode()
+    # return json.dumps([i for i in LIST_TOURNAMENTS if i["department"] == dpt], indent=4).encode()
+    return [i for i in LIST_TOURNAMENTS if i["department"] == dpt]
 
-# @post('/')
-# def post_tournaments():
-#     global LIST_TOURNAMENTS
-#     LIST_TOURNAMENTS = parse_tournaments()
+@get('/id/<id>')
+def get_tournaments(id):
+    response.content_type = 'application/json'
+
+    if id in LIST_TOURNAMENTS:
+        return LIST_TOURNAMENTS[id]
+
+    abort(404, "Tournament not found")
+
+
+@post('/')
+def post_tournaments():
+    global LIST_TOURNAMENTS
+    LIST_TOURNAMENTS = parse_tournaments()
 
 
 if __name__ == "__main__":
+    post_tournaments()
     run(host='localhost', port=8080, debug=True)
