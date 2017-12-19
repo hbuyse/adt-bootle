@@ -16,7 +16,7 @@ from bs4 import BeautifulSoup
 # Regex that gives us the ID of the tournament
 PATTERN_ID = re.compile(".*\/(?P<id>\d*)\/.*")
 # Regex that gives us the city and the department of the tournament
-PATTERN_CITY_DEP = re.compile("(?P<city>.*) \((?P<department>[A-Z0-9]{2})\)")
+PATTERN_CITY_DEP = re.compile("(?P<city>.*) \((?P<dpt>[A-Z0-9]{2})\)")
 # Regex that gives us the address of the tournament
 PATTERN_ADDRESS = re.compile("\'(?P<address>.*)\'")
 #Regex that gives us the day, month and year of the tournament
@@ -81,11 +81,10 @@ class Tournament(object):
 
             # Where does it take place?
             'city': re.search(PATTERN_CITY_DEP, self.html_code.find('h3').string).group("city").strip(),
+            
+            # No conversion to int since in France it can be 2A, 2B (Corsica) or 21
+            'dpt': re.search(PATTERN_CITY_DEP, self.html_code.find('h3').string).group("dpt")
         }
-        try:
-            self.infos['department'] = int(re.search(PATTERN_CITY_DEP, self.html_code.find('h3').string).group("department"))
-        except ValueError as e:
-            self.infos['department'] = re.search(PATTERN_CITY_DEP, self.html_code.find('h3').string).group("department")
 
         self.infos['id'] = int(re.search(PATTERN_ID, self.infos['href']).group("id"))
 
@@ -130,7 +129,7 @@ class Tournament(object):
             d = dict()
             r = re.match(PATTERN_DATE, e.h3.get_text().strip())
             if r:
-                d['day'] = r.group("day").zfill(2)
+                d['day'] = str(int(r.group("day")) + 1).zfill(2)
                 d['month'] = month_alpha_to_number(r.group("month")).zfill(2)
                 d['year'] = r.group("year")
 
@@ -152,7 +151,7 @@ class Tournament(object):
 
 
     def __str__(self):
-        return "Tournament with ID {} in {} ({})".format(self.infos['id'],self.infos['city'], self.infos['department'])
+        return "Tournament with ID {} in {} ({})".format(self.infos['id'],self.infos['city'], self.infos['dpt'])
 
     def __repr__(self):
         return "{}({})".format(self.__class__, self.infos['id'])
@@ -162,8 +161,12 @@ class Tournament(object):
 
 
 def download_main_page():
+    content = None
     r = requests.get("http://www.accro-des-tournois.com")
-    content = ''.join([i.strip().replace('\t', '') for i in r.text.splitlines()])
+    
+    if r.status_code != 200:
+        content = ''.join([i.strip().replace('\t', '') for i in r.text.splitlines()])
+    
     return content
 
 
@@ -175,11 +178,10 @@ def parse_tournaments():
     for e in elements:
         t = Tournament(e)
         t.parse()
-        print(t)
         d[t.json()["id"]] = t.json()
+        print(d)
 
     return d
-
 
 if __name__ == '__main__':
     print(json.dumps(parse_tournaments(), indent=4, sort_keys=True))
