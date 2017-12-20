@@ -22,12 +22,34 @@ PATTERN_ADDRESS = re.compile("\'(?P<address>.*)\'")
 #Regex that gives us the day, month and year of the tournament
 PATTERN_DATE = re.compile(".* (?P<day>\d{1,2}) (?P<month>.*) (?P<year>\d{4})")
 # Patterns that search for the other critical infos
-PATTERN_HOUR = re.compile("Début du tournoi : ([0-9h]{3,5})")
-PATTERN_GYMNASIUM = re.compile("(\d*) gymnase/stade")
+PATTERN_HOUR = re.compile("Début du tournoi : ([0-9h]{2,5})")
+PATTERN_GYMNASIUM = re.compile("(\d*) gymnases?/stades?")
 PATTERN_TERRAINS = re.compile("(\d*) terrains")
 PATTERN_MAXTEAMS = re.compile("(\d*) équipes max.")
 
+LEVELS = {
+    "Loisir": "loisir",
+    "Départemental": "departemental",
+    "Régional": "regional",
+    "National": "national",
+    "Pro": "pro",
+    "Kids": "kids"
+}
 
+FORMATS = {
+    "2x2 Masculin": "twoma",
+    "2x2 Féminin": "twofe",
+    "2x2 Mixte": "twomi",
+    "3x3 Masculin": "threema",
+    "3x3 Féminin": "threefe",
+    "3x3 Mixte": "threemi",
+    "4x4 Masculin": "fourma",
+    "4x4 Féminin": "fourfe",
+    "4x4 Mixte": "fourmi",
+    "6x6 Masculin": "sixma",
+    "6x6 Féminin": "sixfe",
+    "6x6 Mixte": "sixmi"
+}
 
 def month_alpha_to_number(month):
     if month == "Janvier":
@@ -106,7 +128,7 @@ class Tournament(object):
             if re.search('usericon', str(t)):
                 self.infos['user'] = t.get_text()
             elif re.search('phoneicon', str(t)):
-                self.infos['phone'] = t.get_text()
+                self.infos['phone'] = t.get_text().replace(' ', '')
             elif re.search('mouseicon', str(t)):
                 self.infos['website'] = t.a.get('href')
             elif re.search('mailicon', str(t)):
@@ -129,15 +151,21 @@ class Tournament(object):
             d = dict()
             r = re.match(PATTERN_DATE, e.h3.get_text().strip())
             if r:
-                d['day'] = str(int(r.group("day")) + 1).zfill(2)
-                d['month'] = month_alpha_to_number(r.group("month")).zfill(2)
-                d['year'] = r.group("year")
+                d['day'] = int(r.group("day"))
+                d['month'] = int(month_alpha_to_number(r.group("month")))
+                d['year'] = int(r.group("year"))
 
                 s = "{}/{}/{}".format(r.group("day").zfill(2), month_alpha_to_number(r.group("month")).zfill(2), r.group("year"))
                 d['timestamp'] = time.mktime(datetime.datetime.strptime(s, "%d/%m/%Y").timetuple())
 
-                d['formats'] =  e.find('div').contents[0],
-                d['level'] = [x.strip() for x in e.find('div').contents[2].split(', ')]
+                levels = [x.strip() for x in e.find('div').contents[2].split(', ')]
+                formats =  [x.strip() for x in e.find('div').contents[0].split(', ')]
+                for k, v in LEVELS.items():
+                    d[v] = True if k in levels else False
+
+                for k, v in FORMATS.items():
+                    d[v] = True if k in formats else False
+
                 self.infos['events'].append(d)
 
             if re.match("Inscriptions", e.h3.get_text().strip()):
@@ -145,7 +173,7 @@ class Tournament(object):
 
             if re.match("En savoir +", e.h3.get_text().strip()):
                 # print("\n".join(e.div.strings))
-                self.infos['additional'] = "\n".join(e.div.strings)
+                self.infos['additional'] = "\n".join([s.capitalize() for s in e.div.strings])
 
         self.infos['publisher'] = tlist.find('div', attrs={'class' : "align_right"}).a.get_text()
 
@@ -161,27 +189,26 @@ class Tournament(object):
 
 
 def download_main_page():
-    content = None
+    content = str()
     r = requests.get("http://www.accro-des-tournois.com")
     
-    if r.status_code != 200:
+    if r.status_code == 200:
         content = ''.join([i.strip().replace('\t', '') for i in r.text.splitlines()])
     
     return content
 
 
 def parse_tournaments():
-    d = dict()
+    tournaments = list()
     s = BeautifulSoup(download_main_page(), 'html.parser')
 
     elements = s.find_all('li', attrs={"class" : "elementtournoi"})
     for e in elements:
-        t = Tournament(e)
-        t.parse()
-        d[t.json()["id"]] = t.json()
-        print(d)
+        tournament = Tournament(e)
+        tournament.parse()
+        tournaments.append(tournament.json())
 
-    return d
+    return tournaments
 
 if __name__ == '__main__':
     print(json.dumps(parse_tournaments(), indent=4, sort_keys=True))
