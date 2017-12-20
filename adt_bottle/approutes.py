@@ -26,7 +26,7 @@ def get_tournaments():
         # fetch all or one we'll go for all
         rows = cur.execute("SELECT * FROM TOURNAMENTS").fetchall()
         if len(rows) == 0:
-            raise NoTournament("No tournament in department {}".format(dpt))
+            raise NoTournament("No tournament")
 
         for row in rows:
             tmp = dict(zip(row.keys(), tuple(row)))
@@ -38,8 +38,8 @@ def get_tournaments():
         conn.close()
 
         return data
-    except Exception as e:
-        abort(500, "{}: {}".format(type(e).__name__, str(e)))
+    except NoTournament as e:
+        abort(404, "{}: {}".format(type(e).__name__, str(e)))
 
 @get('/dpt/<dpt>')
 def get_tournaments(dpt):
@@ -68,8 +68,6 @@ def get_tournaments(dpt):
         return data
     except NoTournamentInDepartement as e:
         abort(404, "{}: {}".format(type(e).__name__, str(e)))
-    except Exception as e:
-        abort(500, "{}: {}".format(type(e).__name__, str(e)))
 
 @get('/id/<id_t>')
 def get_tournaments(id_t):
@@ -94,8 +92,6 @@ def get_tournaments(id_t):
         return data
     except IdNotFound as e:
         abort(404, "{}: {}".format(type(e).__name__, str(e)))
-    except Exception as e:
-        abort(500, "{}: {}".format(type(e).__name__, str(e)))
 
 @post('/')
 def post_tournaments():
@@ -108,8 +104,6 @@ def post_tournaments():
                     insert_into(conn=conn, event=event, tournament_id=tournament['id'])
                 tournament.pop('events')
                 insert_into(conn=conn, tournament=tournament)
-    except Exception as e:
-        abort(500, "{}: {} (tournament id: {})".format(type(e).__name__, str(e), tournament['id']))
     finally:
         conn.close()
 
