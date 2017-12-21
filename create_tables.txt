@@ -1,0 +1,54 @@
+CREATE TABLE IF NOT EXISTS tournaments (
+    id integer PRIMARY KEY,
+    href text NOT NULL,
+    ground text NOT NULL,
+    new boolean NOT NULL,
+    complete boolean NOT NULL,
+    night boolean NOT NULL,
+    address text NOT NULL,
+    city text NOT NULL,
+    dpt text,
+    name text,
+    username text,
+    phone text,
+    website text,
+    mail text,
+    hour text,
+    maxteams integer,
+    terrains integer,
+    gymnasium integer,
+    inscription text,
+    additional text,
+    publisher text,
+);
+
+
+CREATE TABLE IF NOT EXISTS events (
+    id serial PRIMARY KEY,
+    tournament_id integer NOT NULL,
+    day integer NOT NULL,
+    month integer NOT NULL,
+    year integer NOT NULL,
+    ts integer NOT NULL, -- timestamp
+    loisir boolean NOT NULL,
+    departemental boolean NOT NULL,
+    regional boolean NOT NULL,
+    national boolean NOT NULL,
+    pro boolean NOT NULL,
+    kids boolean NOT NULL,
+    twoma boolean NOT NULL,
+    twofe boolean NOT NULL,
+    twomi boolean NOT NULL,
+    threema boolean NOT NULL,
+    threefe boolean NOT NULL,
+    threemi boolean NOT NULL,
+    fourma boolean NOT NULL,
+    fourfe boolean NOT NULL,
+    fourmi boolean NOT NULL,
+    sixma boolean NOT NULL,
+    sixfe boolean NOT NULL,
+    sixmi boolean NOT NULL,
+    FOREIGN KEY(tournament_id)
+        REFERENCES tournaments(id)
+        ON UPDATE CASCADE ON DELETE CASCADE
+);
