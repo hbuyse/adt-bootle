@@ -37,6 +37,6 @@ if __name__ == "__main__":
 
     import approutes
     if os.environ.get('APP_LOCATION') == 'heroku':
-        run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+        bottle.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
     else:
-        run(host='localhost', port=8080, debug=True)
+        bottle.run(app, host='localhost', port=8080, debug=True)
