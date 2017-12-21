@@ -2,61 +2,7 @@ import logging
 import sqlite3
 
 logger = logging.getLogger(__name__)
-
-
-DATABASE_PATH = "./adt.db"
-
-SQL_CREATE_TOURNAMENT_TABLE = """ CREATE TABLE IF NOT EXISTS tournaments (
-                                        id integer PRIMARY KEY,
-                                        href text NOT NULL,
-                                        ground text NOT NULL,
-                                        new BOOLEAN NOT NULL,
-                                        full BOOLEAN NOT NULL,
-                                        night BOOLEAN NOT NULL,
-                                        address text NOT NULL,
-                                        city text NOT NULL,
-                                        dpt text,
-                                        name text,
-                                        user text,
-                                        phone text,
-                                        website text,
-                                        mail text,
-                                        hour text,
-                                        maxteams integer,
-                                        terrains integer,
-                                        gymnasium integer,
-                                        inscription text,
-                                        additional text,
-                                        publisher text
-                                    ); """
-
-SQL_CREATE_EVENTS_TABLE = """ CREATE TABLE IF NOT EXISTS events (
-                                        id integer PRIMARY KEY AUTOINCREMENT,
-                                        tournament_id integer NOT NULL,
-                                        day integer NOT NULL,
-                                        month integer NOT NULL,
-                                        year integer NOT NULL,
-                                        timestamp integer NOT NULL,
-                                        loisir BOOLEAN NOT NULL,
-                                        departemental BOOLEAN NOT NULL,
-                                        regional BOOLEAN NOT NULL,
-                                        national BOOLEAN NOT NULL,
-                                        pro BOOLEAN NOT NULL,
-                                        kids BOOLEAN NOT NULL,
-                                        twoma BOOLEAN NOT NULL,
-                                        twofe BOOLEAN NOT NULL,
-                                        twomi BOOLEAN NOT NULL,
-                                        threema BOOLEAN NOT NULL,
-                                        threefe BOOLEAN NOT NULL,
-                                        threemi BOOLEAN NOT NULL,
-                                        fourma BOOLEAN NOT NULL,
-                                        fourfe BOOLEAN NOT NULL,
-                                        fourmi BOOLEAN NOT NULL,
-                                        sixma BOOLEAN NOT NULL,
-                                        sixfe BOOLEAN NOT NULL,
-                                        sixmi BOOLEAN NOT NULL
-                                        -- FOREIGN KEY(tournament_id) REFERENCES tournaments(id)
-                                    ); """
+logger.setLevel(logging.DEBUG)
 
 LIST_DEPARTEMENT = {
     "1": {
@@ -445,36 +391,18 @@ LIST_DEPARTEMENT = {
     }
 }
 
-
-def create_db():
-    sqlite3.register_adapter(bool, int)
-    sqlite3.register_converter("BOOLEAN", lambda v: bool(int(v)))
-
-    # create a database connection to a SQLite database
-    try:
-        conn = sqlite3.connect(DATABASE_PATH)
-        conn.execute(SQL_CREATE_TOURNAMENT_TABLE)
-        conn.execute(SQL_CREATE_EVENTS_TABLE)
-    except sqlite3.Error as e:
-        logger.error("{}: {} (tournament id: {})".format(type(e).__name__, str(e), tournament['id']))
-    finally:
-        conn.close() 
-
-
 def check_if_id_exists(**kwargs):
-    cur = kwargs['conn'].cursor()
-
-    if cur.execute("SELECT 1 from {} WHERE id = {}".format(kwargs['table'], kwargs['id'])).fetchone() is None:
-        return False
-    else:
+    try:
+        kwargs['db'].execute("SELECT 1 from {} WHERE id = {}".format(kwargs['table'], kwargs['id'])).fetchone()
         logger.warning("{} in {} already present".format(kwargs['id'], kwargs['table']))
         return True
+    except AttributeError as e: 
+        return False
 
 
 def insert_into(**kwargs):
     objdata = dict()
     table = str()
-    cur = kwargs['conn'].cursor()
 
     if 'event' in kwargs:
         objdata = kwargs['event']
@@ -487,14 +415,15 @@ def insert_into(**kwargs):
         logger.error("No event nor tournament obj found in kwargs")
     
     columns = ', '.join(objdata.keys())
-    placeholders = ', '.join('?' * len(objdata))
-    sql = 'INSERT OR IGNORE INTO {} ({}) VALUES ({})'.format(table, columns, placeholders)
+    placeholders = ', '.join(["%({})s".format(obj) for obj in objdata.keys()])
+
+    sql = 'INSERT INTO {} ({}) VALUES ({})'.format(table, columns, placeholders)
+    print("SQL > " + sql)
+    print(objdata)
 
     try:
-        cur.execute(sql, list(objdata.values()))
+        kwargs['db'].execute(sql, objdata)
         logger.debug("Object added in table {}".format(table))
     except sqlite3.IntegrityError as e:
         logger.error("{}: {} ({})".format(type(e).__name__, str(e), table))
         pass
-
-    kwargs['conn'].commit()

@@ -98,7 +98,7 @@ class Tournament(object):
             # Informations on the tournament
             'ground': self.html_code.find('a').get('class')[0].split('-')[0],
             'new': bool(re.search("new", self.html_code.find('a').get('class')[0])),
-            'full': bool(re.search("complet", self.html_code.find('a').get('class')[0])),
+            'complete': bool(re.search("complet", self.html_code.find('a').get('class')[0])),
             'night': bool(re.search("nuit", self.html_code.find('a').get('class')[0])),
 
             # Where does it take place?
@@ -126,7 +126,7 @@ class Tournament(object):
         tdetails = self.desc.find('div', attrs={"id": "tdetails"})
         for t in tdetails.find_all('p'):
             if re.search('usericon', str(t)):
-                self.infos['user'] = t.get_text()
+                self.infos['username'] = t.get_text()
             elif re.search('phoneicon', str(t)):
                 self.infos['phone'] = t.get_text().replace(' ', '')
             elif re.search('mouseicon', str(t)):
@@ -156,7 +156,7 @@ class Tournament(object):
                 d['year'] = int(r.group("year"))
 
                 s = "{}/{}/{}".format(r.group("day").zfill(2), month_alpha_to_number(r.group("month")).zfill(2), r.group("year"))
-                d['timestamp'] = time.mktime(datetime.datetime.strptime(s, "%d/%m/%Y").timetuple())
+                d['ts'] = int(time.mktime(datetime.datetime.strptime(s, "%d/%m/%Y").timetuple()))
 
                 levels = [x.strip() for x in e.find('div').contents[2].split(', ')]
                 formats =  [x.strip() for x in e.find('div').contents[0].split(', ')]
