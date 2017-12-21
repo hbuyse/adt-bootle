@@ -1,3 +1,8 @@
+#! /usr/bin/env python
+# coding=utf-8
+
+__author__ = "hbuyse"
+
 class IdNotFound(Exception):
     pass
 

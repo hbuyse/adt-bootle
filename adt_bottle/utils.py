@@ -1,5 +1,10 @@
+#! /usr/bin/env python
+# coding=utf-8
+
+__author__ = "hbuyse"
+
 import logging
-import sqlite3
+import psycopg2
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -393,10 +398,10 @@ LIST_DEPARTEMENT = {
 
 def check_if_id_exists(**kwargs):
     try:
-        kwargs['db'].execute("SELECT 1 from {} WHERE id = {}".format(kwargs['table'], kwargs['id'])).fetchone()
+        kwargs['db'].execute("SELECT 1 from {} WHERE id = {}".format(kwargs['table'], kwargs['id']))
         logger.warning("{} in {} already present".format(kwargs['id'], kwargs['table']))
         return True
-    except AttributeError as e: 
+    except AttributeError as e:
         return False
 
 
@@ -418,12 +423,10 @@ def insert_into(**kwargs):
     placeholders = ', '.join(["%({})s".format(obj) for obj in objdata.keys()])
 
     sql = 'INSERT INTO {} ({}) VALUES ({})'.format(table, columns, placeholders)
-    print("SQL > " + sql)
-    print(objdata)
 
     try:
         kwargs['db'].execute(sql, objdata)
         logger.debug("Object added in table {}".format(table))
-    except sqlite3.IntegrityError as e:
+    except psycopg2.IntegrityError as e:
         logger.error("{}: {} ({})".format(type(e).__name__, str(e), table))
         pass
