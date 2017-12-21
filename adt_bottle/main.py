@@ -4,31 +4,36 @@
 __author__ = "hbuyse"
 
 import logging
+import logging.config
 import sqlite3
 import sys
 import os
+import json
 
 import bottle
 
 from approutes import app, plugins
 
-# create logger
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-ch.setFormatter(formatter)
-logger.addHandler(ch)
+def setup_logging(configpath='logging.json', level=logging.INFO, env_key='LOG_CFG'):
+    """Setup logging configuration
+    """
+    path = configpath
+    value = os.getenv(env_key, None)
+    if value:
+        path = value
+    if os.path.exists(path):
+        with open(path, 'rt') as f:
+            config = json.load(f)
+        logging.config.dictConfig(config)
+    else:
+        logging.basicConfig(level=level)
+
 
 if __name__ == "__main__":
+    setup_logging(level=logging.DEBUG)
 
     for plugin in plugins:
         app.install(plugin)
 
-    # run bottle
-    # if os.environ.get('APP_LOCATION') == 'heroku':
-    #     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
-    # else:
     import approutes
     bottle.run(app, host='localhost', port=8080, debug=True)

@@ -7,7 +7,6 @@ import logging
 import psycopg2
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 LIST_DEPARTEMENT = {
     "1": {
@@ -399,7 +398,6 @@ LIST_DEPARTEMENT = {
 def check_if_id_exists(**kwargs):
     try:
         kwargs['db'].execute("SELECT 1 from {} WHERE id = {}".format(kwargs['table'], kwargs['id']))
-        logger.warning("{} in {} already present".format(kwargs['id'], kwargs['table']))
         return True
     except AttributeError as e:
         return False
@@ -426,7 +424,6 @@ def insert_into(**kwargs):
 
     try:
         kwargs['db'].execute(sql, objdata)
-        logger.debug("Object added in table {}".format(table))
+        logger.info("Object added in table {}".format(table))
     except psycopg2.IntegrityError as e:
-        logger.error("{}: {} ({})".format(type(e).__name__, str(e), table))
-        pass
+        logger.exception("{}: {} ({})".format(type(e).__name__, str(e), table))

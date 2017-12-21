@@ -23,7 +23,6 @@ from exceptions import IdNotFound, NoTournamentInDepartement, NoTournament
 
 # Set the logger
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 # Create the app
 app = Bottle()
@@ -40,6 +39,7 @@ if os.environ.get('DATABASE_URL'):
     pgsql_str += "" if url.password is None else 'password={} '.format(url.password)
     pgsql_str += "" if url.hostname is None else 'host={} '.format(url.hostname)
     pgsql_str += "" if url.port is None else 'port={} '.format(url.port)
+
     plugins =  [
         bottle_pgsql.Plugin(pgsql_str)
     ]
@@ -48,8 +48,21 @@ else:
         bottle.ext.sqlite.Plugin(dbfile='adt.db')
     ]
 
-@app.get('/')
+def tracing(func):
+    def wrapper(*args, **kwargs):
+        response = None
+        try:
+            response = func(**kwargs)
+        except (NoTournament, NoTournamentInDepartement, IdNotFound) as e:
+            logger.exception("{}: {}".format(type(e).__name__, str(e)))
+            abort(404, "{}: {}".format(type(e).__name__, str(e)))
+
+        return response
+    return wrapper
+
+@app.get('/', apply=tracing)
 def get_tournaments(db):
+    logger.debug("/")
     response.content_type = 'application/json'
     data = dict()
 
@@ -68,8 +81,9 @@ def get_tournaments(db):
 
     return data
 
-@app.get('/dpt/<dpt>')
+@app.get('/dpt/<dpt>', apply=tracing)
 def get_tournaments(dpt, db):
+    logger.debug("/dpt/{}".format(dpt))
     response.content_type = 'application/json'
     data = dict()
 
@@ -89,24 +103,24 @@ def get_tournaments(dpt, db):
             
     return data
 
-@app.get('/id/<id_t>')
+@app.get('/id/<id_t>', apply=tracing)
 def get_tournaments(id_t, db):
+    logger.debug("/id/{}".format(id_t))
     response.content_type = 'application/json'
 
     # fetch all or one we'll go for all
-    try:
-        db.execute("SELECT * FROM tournaments WHERE id::integer = {}".format(id_t))
-    except AttributeError as e:
+    db.execute("SELECT * FROM tournaments WHERE id::integer = {}".format(id_t))
+    data = db.fetchone()
+
+    if data is None:
         raise IdNotFound("ID {} not found".format(id_t))
 
-    data = db.fetchone()
-    print(data)
     db.execute("SELECT * FROM events WHERE tournament_id = {}".format(data['id']))
     data['events'] = db.fetchall()
     
     return data
 
-@app.post('/')
+@app.post('/', apply=tracing)
 def post_tournaments(db):
     tournaments = parse_tournaments()
     for tournament in tournaments:
